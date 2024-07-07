@@ -18,7 +18,7 @@ class StateHandler {
   private shipTerms: string[]
   private setShipTerms: Dispatch<SetStateAction<string[]>>
 
-  private okResult = { status: Status.Success, message: '' }
+  private okResult: Result<null> = { status: Status.Success, message: '', data: null }
 
   constructor(
     companies: Company[],
@@ -56,17 +56,17 @@ class StateHandler {
     return [...this.vistTimes]
   }
 
-  addCompany(company: Company): Result {
+  addCompany(company: Company): Result<null> {
     company.id = uuidv4()
-    this.setCompanies([...this.companies, company])
+    this.setCompanies((companies) => [...companies, company])
     return this.okResult
   }
 
-  addSchool(school: School): Result {
+  addSchool(school: School): Result<null> {
     school.id = uuidv4()
 
     if (school.numTeams > this.shipTerms.length) {
-      return { status: Status.Error, message: 'Not enough ship terms, too many teams' }
+      return { status: Status.Error, message: 'For mange hold, er løbet tør for gruppenavne!', data: null }
     }
 
     const shipTerms = [...this.shipTerms]
@@ -80,23 +80,23 @@ class StateHandler {
     }
 
     this.setShipTerms(shipTerms)
-    this.setSchools([...this.schools, school])
+    this.setSchools((schools) => [...schools, school])
     return this.okResult
   }
 
-  addVisitTime(visitTime: VisitTime): Result {
+  addVisitTime(visitTime: VisitTime): Result<null> {
     visitTime.id = uuidv4()
     this.setVisitTime([...this.vistTimes, visitTime])
     return this.okResult
   }
 
-  addVisit(visit: Visit): Result {
+  addVisit(visit: Visit): Result<null> {
     if (this.schedule.some((v) => v.company.id === visit.company.id && v.visitTime.id === visit.visitTime.id)) {
-      return { status: Status.Error, message: 'Company already has a visit at this time' }
+      return { status: Status.Error, message: 'Virksomheden har allerede et besøg på dette tidspunkt', data: null }
     }
 
     if (this.schedule.some((v) => v.team.id === visit.team.id && v.visitTime.id === visit.visitTime.id)) {
-      return { status: Status.Error, message: 'School already has a visit at this time' }
+      return { status: Status.Error, message: 'Holdet har allerede et besøg på dette tidspunkt', data: null }
     }
 
     visit.id = uuidv4()
@@ -106,11 +106,39 @@ class StateHandler {
 
   /////////////////////////////////////////////////////////
 
-  removeCompany(companyId: string): Result {
+  addCompanies(companies: Company[]): Result<null> {
+    const curSchools = [...this.companies]
+    const results = companies.map((company) => this.addCompany(company))
+
+    const error = results.find((result) => result.status === Status.Error)
+    if (error) {
+      this.setCompanies(curSchools)
+      return { status: Status.Error, message: error.message, data: null }
+    }
+
+    return this.okResult
+  }
+
+  addSchhols(schools: School[]): Result<null> {
+    const curSchools = [...this.schools]
+    const results = schools.map((school) => this.addSchool(school))
+
+    const error = results.find((result) => result.status === Status.Error)
+    if (error) {
+      this.setSchools(curSchools)
+      return { status: Status.Error, message: error.message, data: null }
+    }
+
+    return this.okResult
+  }
+
+  /////////////////////////////////////////////////////////
+
+  removeCompany(companyId: string): Result<null> {
     const company = this.companies.find((company) => company.id === companyId)
 
     if (!company) {
-      return { status: Status.Error, message: 'Company not found' }
+      return { status: Status.Error, message: 'Virksomhed ikke fundet', data: null }
     }
 
     this.setCompanies(this.companies.filter((company) => company.id !== companyId))
@@ -118,11 +146,11 @@ class StateHandler {
     return this.okResult
   }
 
-  removeSchool(schoolId: string): Result {
+  removeSchool(schoolId: string): Result<null> {
     const school = this.schools.find((school) => school.id === schoolId)
 
     if (!school) {
-      return { status: Status.Error, message: 'School not found' }
+      return { status: Status.Error, message: 'Skole ikke fundet', data: null }
     }
 
     const teamNames = school.teams.map((team) => team.name).reverse()
@@ -134,11 +162,11 @@ class StateHandler {
     return this.okResult
   }
 
-  removeVisitTime(visitTimeId: string): Result {
+  removeVisitTime(visitTimeId: string): Result<null> {
     const visitTime = this.vistTimes.find((visitTime) => visitTime.id === visitTimeId)
 
     if (!visitTime) {
-      return { status: Status.Error, message: 'Visit time not found' }
+      return { status: Status.Error, message: 'Besøgstidspunkt ikke fundet', data: null }
     }
 
     this.setVisitTime(this.vistTimes.filter((visitTime) => visitTime.id !== visitTimeId))
@@ -147,11 +175,11 @@ class StateHandler {
     return this.okResult
   }
 
-  removeVisit(visitId: string): Result {
+  removeVisit(visitId: string): Result<null> {
     const visit = this.schedule.find((visit) => visit.id === visitId)
 
     if (!visit) {
-      return { status: Status.Error, message: 'Visit not found' }
+      return { status: Status.Error, message: 'Besøg ikke fundet', data: null }
     }
 
     this.setSchedule(this.schedule.filter((visit) => visit.id !== visitId))
@@ -161,19 +189,19 @@ class StateHandler {
 
   /////////////////////////////////////////////////////////
 
-  removeAllCompanies(): Result {
+  removeAllCompanies(): Result<null> {
     this.setCompanies([])
     this.setSchedule([])
     return this.okResult
   }
 
-  removeAllSchools(): Result {
+  removeAllSchools(): Result<null> {
     this.setSchools([])
     this.setSchedule([])
     return this.okResult
   }
 
-  removeAllVisitTimes(): Result {
+  removeAllVisitTimes(): Result<null> {
     this.setVisitTime([])
     this.setSchedule([])
     return this.okResult
@@ -181,11 +209,11 @@ class StateHandler {
 
   /////////////////////////////////////////////////////////
 
-  updateCompany(updatedCompany: Company): Result {
+  updateCompany(updatedCompany: Company): Result<null> {
     const company = this.companies.find((company) => company.id === updatedCompany.id)
 
     if (!company) {
-      return { status: Status.Error, message: 'Company not found' }
+      return { status: Status.Error, message: 'Virksomhed ikke fundet', data: null }
     }
 
     this.setCompanies(this.companies.map((company) => (company.id === updatedCompany.id ? updatedCompany : company)))
@@ -193,18 +221,18 @@ class StateHandler {
     return this.okResult
   }
 
-  updateSchool(updatedSchool: School): Result {
+  updateSchool(updatedSchool: School): Result<null> {
     const oldSchool = this.schools.find((school) => school.id === updatedSchool.id)
 
     if (!oldSchool) {
-      return { status: Status.Error, message: 'School not found' }
+      return { status: Status.Error, message: 'Skole ikke fundet', data: null }
     }
 
     const difference = updatedSchool.numTeams - oldSchool.numTeams
 
     if (difference > 0) {
       if (difference > this.shipTerms.length) {
-        return { status: Status.Error, message: 'Not enough ship terms, too many teams' }
+        return { status: Status.Error, message: 'For mange hold, er løbet tør for gruppenavne!', data: null }
       }
 
       const shipTerms = [...this.shipTerms]
@@ -230,11 +258,11 @@ class StateHandler {
     return this.okResult
   }
 
-  updateVisitTime(updatedVisitTime: VisitTime): Result {
+  updateVisitTime(updatedVisitTime: VisitTime): Result<null> {
     const visitTime = this.vistTimes.find((visitTime) => visitTime.id === updatedVisitTime.id)
 
     if (!visitTime) {
-      return { status: Status.Error, message: 'Visit time not found' }
+      return { status: Status.Error, message: 'Besøgstidspunkt ikke fundet', data: null }
     }
 
     this.setVisitTime(

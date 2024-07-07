@@ -5,6 +5,9 @@ import VisitTime from '../types/VisitTime'
 import StateHandler from '../handlers/StateHandler'
 import SaveStateHandler from '../handlers/SaveStateHandler'
 import Visit from '../types/Visit'
+import fakeCompanies from '../data/fakeCompanies'
+import fakeSchools from '../data/fakeSchools'
+import fakeVisitTimes from '../data/fakeVisitTimes'
 
 interface AppContext {
   stateHandler: StateHandler
@@ -38,6 +41,14 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
   const [visitTimes, setVisitTimes] = useState<VisitTime[]>(loadedState.visitTimes)
   const [schedule, setSchedule] = useState<Visit[]>(loadedState.schedule)
   const [shipTerms, setShipTerms] = useState<string[]>(loadedState.shipTerms)
+
+  useEffect(() => {
+    if (import.meta.env.VITE_PUBULATED === 'true') {
+      setCompanies(fakeCompanies)
+      setSchools(fakeSchools)
+      setVisitTimes(fakeVisitTimes)
+    }
+  }, [])
 
   useEffect(() => {
     saveStateHandler.saveState({ companies, schools, visitTimes, schedule, shipTerms })
