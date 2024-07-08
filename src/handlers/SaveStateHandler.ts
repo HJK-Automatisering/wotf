@@ -1,14 +1,13 @@
-import Company from '../types/Company'
-import School from '../types/School'
-import Visit from '../types/Visit'
-import VisitTime from '../types/VisitTime'
+import Company, { SerializedCompany } from '../types/Company'
+import School, { SerializedSchool } from '../types/School'
+import Visit, { SerializedVisit } from '../types/Visit'
+import VisitTime, { SerializedVisitTime } from '../types/VisitTime'
 
 interface GlobalState {
   companies: Company[]
   schools: School[]
   visitTimes: VisitTime[]
   schedule: Visit[]
-  shipTerms: string[]
 }
 
 class SaveStateHandler {
@@ -23,14 +22,29 @@ class SaveStateHandler {
     const savedStateString = localStorage.getItem(this.storedStateName)
 
     if (savedStateString) {
-      return JSON.parse(savedStateString)
+      const savedStateJson = JSON.parse(savedStateString)
+      const companiesJson = savedStateJson.companies
+      const schoolsJson = savedStateJson.schools
+      const visitTimesJson = savedStateJson.visitTimes
+      const scheduleJson = savedStateJson.schedule
+
+      const companies = companiesJson.map((data: SerializedCompany) => Company.fromSerializedData(data))
+      const schools = schoolsJson.map((data: SerializedSchool) => School.fromSerializedData(data))
+      const visitTimes = visitTimesJson.map((data: SerializedVisitTime) => VisitTime.fromSerializedData(data))
+      const schedule = scheduleJson.map((data: SerializedVisit) => Visit.fromSerializedData(data))
+
+      return {
+        companies,
+        schools,
+        visitTimes,
+        schedule,
+      }
     } else {
       return {
         companies: [],
         schools: [],
         visitTimes: [],
         schedule: [],
-        shipTerms: [],
       }
     }
   }

@@ -23,8 +23,6 @@ const getDefaultAppContext = (): AppContext => {
       [],
       () => [],
       [],
-      () => [],
-      [],
       () => []
     ),
   }
@@ -40,7 +38,6 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
   const [schools, setSchools] = useState<School[]>(loadedState.schools)
   const [visitTimes, setVisitTimes] = useState<VisitTime[]>(loadedState.visitTimes)
   const [schedule, setSchedule] = useState<Visit[]>(loadedState.schedule)
-  const [shipTerms, setShipTerms] = useState<string[]>(loadedState.shipTerms)
 
   useEffect(() => {
     if (import.meta.env.VITE_PUBULATED === 'true') {
@@ -51,8 +48,8 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
   }, [])
 
   useEffect(() => {
-    saveStateHandler.saveState({ companies, schools, visitTimes, schedule, shipTerms })
-  }, [companies, schools, visitTimes, schedule, shipTerms, saveStateHandler])
+    saveStateHandler.saveState({ companies, schools, visitTimes, schedule })
+  }, [companies, schools, visitTimes, schedule, saveStateHandler])
 
   const contextValues = {
     stateHandler: new StateHandler(
@@ -63,9 +60,7 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
       visitTimes,
       setVisitTimes,
       schedule,
-      setSchedule,
-      shipTerms,
-      setShipTerms
+      setSchedule
     ),
   }
 

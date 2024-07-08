@@ -5,6 +5,10 @@ import VisitTime from '../types/VisitTime'
 import Visit from '../types/Visit'
 import { v4 as uuidv4 } from 'uuid'
 import Result, { Status } from '../types/Result'
+import CompanyFormData from '../types/formTypes/CompanyFormData'
+import SchoolFormData from '../types/formTypes/SchoolFormData'
+import shipTerms from '../data/shipTerms'
+import VisitTimeFormData from '../types/formTypes/VisitTimeFormData'
 
 class StateHandler {
   private companies: Company[]
@@ -15,9 +19,8 @@ class StateHandler {
   private setVisitTime: Dispatch<SetStateAction<VisitTime[]>>
   private schedule: Visit[]
   private setSchedule: Dispatch<SetStateAction<Visit[]>>
-  private shipTerms: string[]
-  private setShipTerms: Dispatch<SetStateAction<string[]>>
 
+  private shipTerms = [...shipTerms]
   private okResult: Result<null> = { status: Status.Success, message: '', data: null }
 
   constructor(
@@ -28,9 +31,7 @@ class StateHandler {
     vistTimes: VisitTime[],
     setVisitTime: Dispatch<SetStateAction<VisitTime[]>>,
     schedule: Visit[],
-    setSchedule: Dispatch<SetStateAction<Visit[]>>,
-    shipTerms: string[],
-    setShipTerms: Dispatch<SetStateAction<string[]>>
+    setSchedule: Dispatch<SetStateAction<Visit[]>>
   ) {
     this.companies = companies
     this.setCompanies = setCompanies
@@ -40,8 +41,6 @@ class StateHandler {
     this.setVisitTime = setVisitTime
     this.schedule = schedule
     this.setSchedule = setSchedule
-    this.shipTerms = shipTerms
-    this.setShipTerms = setShipTerms
   }
 
   getCompanies() {
@@ -56,37 +55,26 @@ class StateHandler {
     return [...this.vistTimes]
   }
 
-  addCompany(company: Company): Result<null> {
-    company.id = uuidv4()
+  addCompany(companyData: CompanyFormData): Result<null> {
+    const company = Company.fromFormData(companyData)
     this.setCompanies((companies) => [...companies, company])
     return this.okResult
   }
 
-  addSchool(school: School): Result<null> {
-    school.id = uuidv4()
+  addSchool(schoolData: SchoolFormData): Result<null> {
+    const school = School.fromFormData(schoolData)
 
     if (school.numTeams > this.shipTerms.length) {
       return { status: Status.Error, message: 'For mange hold, er løbet tør for gruppenavne!', data: null }
     }
 
-    const shipTerms = [...this.shipTerms]
-
-    for (let i = 0; i < school.numTeams; i++) {
-      school.teams.push({
-        id: uuidv4(),
-        schoolId: school.id,
-        name: shipTerms.shift()!,
-      })
-    }
-
-    this.setShipTerms(shipTerms)
     this.setSchools((schools) => [...schools, school])
     return this.okResult
   }
 
-  addVisitTime(visitTime: VisitTime): Result<null> {
-    visitTime.id = uuidv4()
-    this.setVisitTime([...this.vistTimes, visitTime])
+  addVisitTime(visitTimeData: VisitTimeFormData): Result<null> {
+    const visitTime = VisitTime.fromFormData(visitTimeData)
+    this.setVisitTime((visitTimes) => [...visitTimes, visitTime])
     return this.okResult
   }
 
@@ -106,7 +94,7 @@ class StateHandler {
 
   /////////////////////////////////////////////////////////
 
-  addCompanies(companies: Company[]): Result<null> {
+  addCompanies(companies: CompanyFormData[]): Result<null> {
     const curSchools = [...this.companies]
     const results = companies.map((company) => this.addCompany(company))
 
@@ -119,13 +107,26 @@ class StateHandler {
     return this.okResult
   }
 
-  addSchhols(schools: School[]): Result<null> {
+  addSchools(schools: SchoolFormData[]): Result<null> {
     const curSchools = [...this.schools]
     const results = schools.map((school) => this.addSchool(school))
 
     const error = results.find((result) => result.status === Status.Error)
     if (error) {
       this.setSchools(curSchools)
+      return { status: Status.Error, message: error.message, data: null }
+    }
+
+    return this.okResult
+  }
+
+  addVisitTimes(visitTimes: VisitTimeFormData[]): Result<null> {
+    const curVisitTimes = [...this.vistTimes]
+    const results = visitTimes.map((visitTime) => this.addVisitTime(visitTime))
+
+    const error = results.find((result) => result.status === Status.Error)
+    if (error) {
+      this.setVisitTime(curVisitTimes)
       return { status: Status.Error, message: error.message, data: null }
     }
 
@@ -153,12 +154,8 @@ class StateHandler {
       return { status: Status.Error, message: 'Skole ikke fundet', data: null }
     }
 
-    const teamNames = school.teams.map((team) => team.name).reverse()
-
-    this.setShipTerms([...teamNames, ...this.shipTerms])
     this.setSchools(this.schools.filter((school) => school.id !== schoolId))
     this.setSchedule(this.schedule.filter((visit) => visit.team.schoolId !== schoolId))
-
     return this.okResult
   }
 
@@ -209,66 +206,54 @@ class StateHandler {
 
   /////////////////////////////////////////////////////////
 
-  updateCompany(updatedCompany: Company): Result<null> {
-    const company = this.companies.find((company) => company.id === updatedCompany.id)
+  updateCompany(updatedCompanyData: CompanyFormData, companyId: string): Result<null> {
+    const company = this.companies.find((company) => company.id === companyId)
 
     if (!company) {
       return { status: Status.Error, message: 'Virksomhed ikke fundet', data: null }
     }
 
-    this.setCompanies(this.companies.map((company) => (company.id === updatedCompany.id ? updatedCompany : company)))
+    const result = company.updateFromFormData(updatedCompanyData)
 
+    if (result.status === Status.Error) {
+      return result
+    }
+
+    this.setCompanies(this.companies.map((c) => (c.id === companyId ? company : c)))
     return this.okResult
   }
 
-  updateSchool(updatedSchool: School): Result<null> {
-    const oldSchool = this.schools.find((school) => school.id === updatedSchool.id)
+  updateSchool(updatedSchoolData: SchoolFormData, schoolId: string): Result<null> {
+    const school = this.schools.find((school) => school.id === schoolId)
 
-    if (!oldSchool) {
+    if (!school) {
       return { status: Status.Error, message: 'Skole ikke fundet', data: null }
     }
 
-    const difference = updatedSchool.numTeams - oldSchool.numTeams
+    const result = school.updateFromFormData(updatedSchoolData)
 
-    if (difference > 0) {
-      if (difference > this.shipTerms.length) {
-        return { status: Status.Error, message: 'For mange hold, er løbet tør for gruppenavne!', data: null }
-      }
-
-      const shipTerms = [...this.shipTerms]
-
-      for (let i = 0; i < difference; i++) {
-        updatedSchool.teams.push({
-          id: uuidv4(),
-          schoolId: updatedSchool.id,
-          name: this.shipTerms.shift()!,
-        })
-      }
-
-      this.setShipTerms(shipTerms)
-    } else if (difference < 0) {
-      const removedTeams = oldSchool.teams.slice(updatedSchool.numTeams)
-      const teamNames = removedTeams.map((team) => team.name).reverse()
-
-      updatedSchool.teams = oldSchool.teams.slice(0, updatedSchool.numTeams)
-      this.setShipTerms([...teamNames, ...this.shipTerms])
+    if (result.status === Status.Error) {
+      return result
     }
 
-    this.setSchools(this.schools.map((school) => (school.id === updatedSchool.id ? updatedSchool : school)))
+    this.setSchools(this.schools.map((s) => (s.id === schoolId ? school : s)))
     return this.okResult
   }
 
-  updateVisitTime(updatedVisitTime: VisitTime): Result<null> {
-    const visitTime = this.vistTimes.find((visitTime) => visitTime.id === updatedVisitTime.id)
+  updateVisitTime(updatedVisitTimeData: VisitTimeFormData, visitTimeId: string): Result<null> {
+    const visitTime = this.vistTimes.find((visitTime) => visitTime.id === visitTimeId)
 
     if (!visitTime) {
       return { status: Status.Error, message: 'Besøgstidspunkt ikke fundet', data: null }
     }
 
-    this.setVisitTime(
-      this.vistTimes.map((visitTime) => (visitTime.id === updatedVisitTime.id ? updatedVisitTime : visitTime))
-    )
+    const result = visitTime.updateFromFormData(updatedVisitTimeData)
 
+    if (result.status === Status.Error) {
+      return result
+    }
+
+    this.setVisitTime(this.vistTimes.map((vt) => (visitTime.id === vt.id ? visitTime : vt)))
     return this.okResult
   }
 }

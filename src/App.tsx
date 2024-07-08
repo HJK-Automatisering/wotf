@@ -1,4 +1,6 @@
 import CompanyList from './components/CompanyList'
+import SchoolList from './components/SchoolList'
+import VisitTimeList from './components/VisitTimeList'
 import AppContextProvider from './contexts/AppContextProvider'
 
 function App() {
@@ -9,6 +11,8 @@ function App() {
           <h1 className="font-bold text-2xl">WOTF Fordelingsværktøj</h1>
           <hr />
           <CompanyList />
+          <SchoolList />
+          <VisitTimeList />
         </div>
       </div>
     </AppContextProvider>

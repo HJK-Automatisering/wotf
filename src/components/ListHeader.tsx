@@ -18,7 +18,7 @@ export default function ListHeader(props: Props) {
         {buttons.map((button, idx) => (
           <button
             key={idx}
-            className="px-3 py-1 text-sm font-semibold text-white bg-blue-500 rounded"
+            className="w-20 px-3 py-1 text-sm font-semibold text-white bg-blue-500 rounded"
             onClick={button.onClick}
           >
             {button.text}

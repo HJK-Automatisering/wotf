@@ -1,24 +1,15 @@
 import Company from '../types/Company'
 
 const companies: Company[] = [
-  {
-    id: '1',
-    name: 'Hirtshals Redningsstation',
-    contactPerson: 'Morten Jensen',
-    phone: '12345678',
-    email: 'mojensen@blabla.com',
-    adress: 'Jens Munksvej 6',
-    website: 'HirtshalsRedningsstation.com',
-  },
-  {
-    id: '2',
-    name: 'Hirtshals Fiskeauktion',
-    contactPerson: 'Hans Hansen',
-    phone: '87654321',
-    email: '',
-    adress: 'Fiskevej 1',
-    website: 'HirtshalsFiskeauktion.com',
-  },
+  new Company(
+    'Hirtshals Redningsstation',
+    'Morten Jensen',
+    '12345678',
+    'mojensen@blablabbla.com',
+    'Jens Munksvej 6',
+    'HirtshalsRedningsstation.com'
+  ),
+  new Company('Hirtshals Fiskeauktion', 'Hans Hansen', '87654321', 'ad', 'Fiskevej 1', 'HirtshalsFiskeauktion.com'),
 ]
 
 export default companies

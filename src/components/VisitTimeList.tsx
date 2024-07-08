@@ -5,49 +5,45 @@ import { AppContext } from '../contexts/AppContextProvider'
 import ImportHandler from '../handlers/ImportHandler'
 
 const fields = [
-  { name: 'name', label: 'Navn' },
-  { name: 'contactPerson', label: 'Kontaktperson' },
-  { name: 'phone', label: 'Telefon' },
-  { name: 'email', label: 'Mail' },
-  { name: 'address', label: 'Adresse' },
-  { name: 'website', label: 'Hjemmeside' },
+  { name: 'startTime', label: 'Starttidspunkt', type: 'time' },
+  { name: 'endTime', label: 'Sluttidspunkt', type: 'time' },
 ]
 
 export default function CompanyList() {
   const { stateHandler } = useContext(AppContext)
 
-  const getEntities = stateHandler.getCompanies.bind(stateHandler)
+  const getEntities = stateHandler.getVisitTimes.bind(stateHandler)
 
-  const handleSubmitEntity = { handle: stateHandler.addCompany.bind(stateHandler) }
+  const handleSubmitEntity = { handle: stateHandler.addVisitTime.bind(stateHandler) }
 
-  const handleRemoveEntity = { handle: stateHandler.removeCompany.bind(stateHandler) }
+  const handleRemoveEntity = { handle: stateHandler.removeVisitTime.bind(stateHandler) }
 
-  const handleUpdateEntity = { handle: stateHandler.updateCompany.bind(stateHandler) }
+  const handleUpdateEntity = { handle: stateHandler.updateVisitTime.bind(stateHandler) }
 
   const handleRemoveAllEntities = {
     safetyMessage: 'Er du sikker på at du vil slette alle virksomheder?',
-    handle: stateHandler.removeAllCompanies.bind(stateHandler),
+    handle: stateHandler.removeAllVisitTimes.bind(stateHandler),
   }
 
   const handleImportEntities = {
     instructionMessage:
-      'Kopier dine 6 kolonner med virksomhedsinformation fra Excel.\n' +
+      'Kopier dine 2 kolonner med besøgstidsinformation fra Excel.\n' +
       'Kolonnerne bør stå i følgende rækkefølge:\n' +
-      '| Navn | Kontaktperson | Telefon | Mail | Adresse | Hjemmeside |\n' +
+      '| Starttid | Sluttid |\n' +
       'Tryk derefter på OK for at indsætte dataen i udklipsholderen.',
     handle: async () => {
-      const result = await ImportHandler.getCompaniesFromClipboard()
+      const result = await ImportHandler.getVisitTimesFromClipboard()
 
       if (result.status === Status.Error) {
         return { status: Status.Error, message: result.message, data: null }
       }
-      return stateHandler.addCompanies(result.data)
+      return stateHandler.addVisitTimes(result.data)
     },
   }
 
   return (
     <EntityList
-      title={`Virksomheder (${stateHandler.getCompanies().length})`}
+      title={`Besøgstider (${stateHandler.getVisitTimes().length})`}
       fields={fields}
       utils={{
         getEntities,
