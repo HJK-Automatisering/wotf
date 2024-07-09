@@ -52,7 +52,7 @@ export default class ImportHandler {
 
       const visitTimeStrings = clipboardText.split('\n')
       const visitTimes = visitTimeStrings.map((visitTimeString) => {
-        const visitTimeData = visitTimeString.split('\t')
+        const visitTimeData = visitTimeString.replace(/\./g, ':').split('\t')
         return {
           startTime: visitTimeData[0],
           endTime: visitTimeData[1],
