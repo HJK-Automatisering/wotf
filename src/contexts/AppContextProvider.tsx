@@ -1,7 +1,7 @@
 import { createContext, useEffect, useMemo, useState } from 'react'
-import Company from '../types/Company'
-import School from '../types/School'
-import VisitTime from '../types/VisitTime'
+import Company from '../types/entities/Company'
+import School from '../types/entities/School'
+import VisitTime from '../types/entities/VisitTime'
 import StateHandler from '../handlers/StateHandler'
 import SaveStateHandler from '../handlers/SaveStateHandler'
 import Visit from '../types/Visit'
@@ -37,7 +37,7 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
   const [companies, setCompanies] = useState<Company[]>(loadedState.companies)
   const [schools, setSchools] = useState<School[]>(loadedState.schools)
   const [visitTimes, setVisitTimes] = useState<VisitTime[]>(loadedState.visitTimes)
-  const [schedule, setSchedule] = useState<Visit[]>(loadedState.schedule)
+  const [visits, setVisits] = useState<Visit[]>(loadedState.visits)
 
   useEffect(() => {
     if (import.meta.env.VITE_PUBULATED === 'true') {
@@ -48,8 +48,8 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
   }, [])
 
   useEffect(() => {
-    saveStateHandler.saveState({ companies, schools, visitTimes, schedule })
-  }, [companies, schools, visitTimes, schedule, saveStateHandler])
+    saveStateHandler.saveState({ companies, schools, visitTimes, visits: visits })
+  }, [companies, schools, visitTimes, visits, saveStateHandler])
 
   const contextValues = {
     stateHandler: new StateHandler(
@@ -59,8 +59,8 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
       setSchools,
       visitTimes,
       setVisitTimes,
-      schedule,
-      setSchedule
+      visits,
+      setVisits
     ),
   }
 

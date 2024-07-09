@@ -1,4 +1,4 @@
-import BaseFormData from './BaseFormData'
+import BaseFormData from '../entityFormData/BaseFormData'
 
 export default interface BaseEntity<T extends BaseFormData> {
   id: string

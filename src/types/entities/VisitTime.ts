@@ -1,7 +1,7 @@
 import BaseEntity from './BaseEntity'
 import { v4 as uuidv4 } from 'uuid'
-import Result, { Status } from './Result'
-import VisitTimeFormData from './formTypes/VisitTimeFormData'
+import Result, { Status } from '../Result'
+import VisitTimeFormData from '../entityFormData/VisitTimeFormData'
 
 export interface SerializedVisitTime {
   id: string

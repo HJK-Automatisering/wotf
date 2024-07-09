@@ -1,4 +1,4 @@
-import BaseFormData from '../BaseFormData'
+import BaseFormData from './BaseFormData'
 
 export default interface CompanyFormData extends BaseFormData {
   name: string

@@ -3,8 +3,8 @@ import ListHeader from './ListHeader'
 import ResultBox from './ResultBox'
 import Form from './Form'
 import Result from '../types/Result'
-import BaseFormData from '../types/BaseFormData'
-import BaseEntity from '../types/BaseEntity'
+import BaseFormData from '../types/entityFormData/BaseFormData'
+import BaseEntity from '../types/entities/BaseEntity'
 import { IoTrashOutline, IoCheckmark, IoCloseOutline } from 'react-icons/io5'
 
 interface EntityListProps<T extends BaseFormData, U extends BaseEntity<T>> {
@@ -92,7 +92,7 @@ export default function EntityList<T extends BaseFormData, U extends BaseEntity<
   }
 
   return (
-    <div className="flex flex-col w-full space-y-3">
+    <div className="flex flex-col w-full">
       <ListHeader
         title={props.title}
         buttons={[
@@ -116,7 +116,7 @@ export default function EntityList<T extends BaseFormData, U extends BaseEntity<
               />
             </div>
           )}
-          <div className="bg-white rounded p-2 shadow">
+          <div className="cus-container">
             {entityDataMap.map((mapping, idx) => (
               <div key={mapping.entity.id}>
                 {beingEdited.includes(mapping.entity.id) ? (
@@ -133,9 +133,9 @@ export default function EntityList<T extends BaseFormData, U extends BaseEntity<
                     onClick={() => handleToggleEditEntity(mapping.entity.id)}
                     className="flex hover:bg-slate-100 hover:cursor-pointer px-1 rounded"
                   >
-                    <p>{mapping.entity.displayName}</p>
+                    <p className="text-sm">{mapping.entity.displayName}</p>
                     <button
-                      className="hover:text-red-500 ml-auto"
+                      className="text-slate-400 hover:text-red-500 ml-auto"
                       onClick={() => handleRemoveEntity(mapping.entity.id)}
                     >
                       <IoTrashOutline />

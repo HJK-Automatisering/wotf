@@ -1,6 +1,6 @@
-import Company, { SerializedCompany } from './Company'
-import School, { SerializedTeam, Team } from './School'
-import VisitTime, { SerializedVisitTime } from './VisitTime'
+import Company, { SerializedCompany } from './entities/Company'
+import School, { SerializedTeam, Team } from './entities/School'
+import VisitTime, { SerializedVisitTime } from './entities/VisitTime'
 
 export interface SerializedVisit {
   id: string

@@ -1,14 +1,14 @@
 import { Dispatch, SetStateAction } from 'react'
-import Company from '../types/Company'
-import School from '../types/School'
-import VisitTime from '../types/VisitTime'
+import Company from '../types/entities/Company'
+import School from '../types/entities/School'
+import VisitTime from '../types/entities/VisitTime'
 import Visit from '../types/Visit'
 import { v4 as uuidv4 } from 'uuid'
 import Result, { Status } from '../types/Result'
-import CompanyFormData from '../types/formTypes/CompanyFormData'
-import SchoolFormData from '../types/formTypes/SchoolFormData'
+import CompanyFormData from '../types/entityFormData/CompanyFormData'
+import SchoolFormData from '../types/entityFormData/SchoolFormData'
 import shipTerms from '../data/shipTerms'
-import VisitTimeFormData from '../types/formTypes/VisitTimeFormData'
+import VisitTimeFormData from '../types/entityFormData/VisitTimeFormData'
 
 class StateHandler {
   private companies: Company[]
@@ -17,8 +17,8 @@ class StateHandler {
   private setSchools: Dispatch<SetStateAction<School[]>>
   private vistTimes: VisitTime[]
   private setVisitTime: Dispatch<SetStateAction<VisitTime[]>>
-  private schedule: Visit[]
-  private setSchedule: Dispatch<SetStateAction<Visit[]>>
+  private visits: Visit[]
+  private setVisits: Dispatch<SetStateAction<Visit[]>>
 
   private shipTerms = [...shipTerms]
   private okResult: Result<null> = { status: Status.Success, message: '', data: null }
@@ -30,8 +30,8 @@ class StateHandler {
     setSchools: Dispatch<SetStateAction<School[]>>,
     vistTimes: VisitTime[],
     setVisitTime: Dispatch<SetStateAction<VisitTime[]>>,
-    schedule: Visit[],
-    setSchedule: Dispatch<SetStateAction<Visit[]>>
+    visits: Visit[],
+    setVisits: Dispatch<SetStateAction<Visit[]>>
   ) {
     this.companies = companies
     this.setCompanies = setCompanies
@@ -39,8 +39,8 @@ class StateHandler {
     this.setSchools = setSchools
     this.vistTimes = vistTimes
     this.setVisitTime = setVisitTime
-    this.schedule = schedule
-    this.setSchedule = setSchedule
+    this.visits = visits
+    this.setVisits = setVisits
   }
 
   getCompanies() {
@@ -53,6 +53,10 @@ class StateHandler {
 
   getVisitTimes() {
     return [...this.vistTimes]
+  }
+
+  getVisits() {
+    return [...this.visits]
   }
 
   addCompany(companyData: CompanyFormData): Result<null> {
@@ -79,16 +83,16 @@ class StateHandler {
   }
 
   addVisit(visit: Visit): Result<null> {
-    if (this.schedule.some((v) => v.company.id === visit.company.id && v.visitTime.id === visit.visitTime.id)) {
+    if (this.visits.some((v) => v.company.id === visit.company.id && v.visitTime.id === visit.visitTime.id)) {
       return { status: Status.Error, message: 'Virksomheden har allerede et besøg på dette tidspunkt', data: null }
     }
 
-    if (this.schedule.some((v) => v.team.id === visit.team.id && v.visitTime.id === visit.visitTime.id)) {
+    if (this.visits.some((v) => v.team.id === visit.team.id && v.visitTime.id === visit.visitTime.id)) {
       return { status: Status.Error, message: 'Holdet har allerede et besøg på dette tidspunkt', data: null }
     }
 
     visit.id = uuidv4()
-    this.setSchedule([...this.schedule, visit])
+    this.setVisits([...this.visits, visit])
     return this.okResult
   }
 
@@ -143,7 +147,7 @@ class StateHandler {
     }
 
     this.setCompanies(this.companies.filter((company) => company.id !== companyId))
-    this.setSchedule(this.schedule.filter((visit) => visit.company.id !== companyId))
+    this.setVisits(this.visits.filter((visit) => visit.company.id !== companyId))
     return this.okResult
   }
 
@@ -155,7 +159,7 @@ class StateHandler {
     }
 
     this.setSchools(this.schools.filter((school) => school.id !== schoolId))
-    this.setSchedule(this.schedule.filter((visit) => visit.team.schoolId !== schoolId))
+    this.setVisits(this.visits.filter((visit) => visit.team.schoolId !== schoolId))
     return this.okResult
   }
 
@@ -167,19 +171,19 @@ class StateHandler {
     }
 
     this.setVisitTime(this.vistTimes.filter((visitTime) => visitTime.id !== visitTimeId))
-    this.setSchedule(this.schedule.filter((visit) => visit.visitTime.id !== visitTimeId))
+    this.setVisits(this.visits.filter((visit) => visit.visitTime.id !== visitTimeId))
 
     return this.okResult
   }
 
   removeVisit(visitId: string): Result<null> {
-    const visit = this.schedule.find((visit) => visit.id === visitId)
+    const visit = this.visits.find((visit) => visit.id === visitId)
 
     if (!visit) {
       return { status: Status.Error, message: 'Besøg ikke fundet', data: null }
     }
 
-    this.setSchedule(this.schedule.filter((visit) => visit.id !== visitId))
+    this.setVisits(this.visits.filter((visit) => visit.id !== visitId))
 
     return this.okResult
   }
@@ -188,19 +192,24 @@ class StateHandler {
 
   removeAllCompanies(): Result<null> {
     this.setCompanies([])
-    this.setSchedule([])
+    this.setVisits([])
     return this.okResult
   }
 
   removeAllSchools(): Result<null> {
     this.setSchools([])
-    this.setSchedule([])
+    this.setVisits([])
     return this.okResult
   }
 
   removeAllVisitTimes(): Result<null> {
     this.setVisitTime([])
-    this.setSchedule([])
+    this.setVisits([])
+    return this.okResult
+  }
+
+  removeAllVisits(): Result<null> {
+    this.setVisits([])
     return this.okResult
   }
 

@@ -1,4 +1,4 @@
-import VisitTime from '../types/VisitTime'
+import VisitTime from '../types/entities/VisitTime'
 
 const visitTimes: VisitTime[] = [
   new VisitTime(new Date('2021-09-01T09:15:00'), new Date('2021-09-01T10:15:00')),

@@ -1,4 +1,4 @@
-import BaseFormData from '../BaseFormData'
+import BaseFormData from './BaseFormData'
 
 export default interface VisitTimeFormData extends BaseFormData {
   startTime: string

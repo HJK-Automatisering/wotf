@@ -1,6 +1,6 @@
-import CompanyFormData from '../types/formTypes/CompanyFormData'
-import SchoolFormData from '../types/formTypes/SchoolFormData'
-import VisitTimeFormData from '../types/formTypes/VisitTimeFormData'
+import CompanyFormData from '../types/entityFormData/CompanyFormData'
+import SchoolFormData from '../types/entityFormData/SchoolFormData'
+import VisitTimeFormData from '../types/entityFormData/VisitTimeFormData'
 import Result, { Status } from '../types/Result'
 
 export default class ImportHandler {

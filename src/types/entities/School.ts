@@ -1,7 +1,7 @@
 import BaseEntity from './BaseEntity'
 import { v4 as uuidv4 } from 'uuid'
-import Result, { Status } from './Result'
-import SchoolFormData from './formTypes/SchoolFormData'
+import Result, { Status } from '../Result'
+import SchoolFormData from '../entityFormData/SchoolFormData'
 
 export interface SerializedSchool {
   id: string

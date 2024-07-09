@@ -1,5 +1,5 @@
 import { FormEvent, Fragment } from 'react'
-import BaseFormData from '../types/BaseFormData'
+import BaseFormData from '../types/entityFormData/BaseFormData'
 
 interface FormProps<T extends BaseFormData> {
   fields: { name: string; label: string; type?: string; options?: { [key: string]: string } }[]
@@ -27,14 +27,14 @@ export default function Form<T extends BaseFormData>({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex-col grid grid-cols-3 gap-0.5 p-1 bg-slate-100 rounded">
+    <form onSubmit={handleSubmit} className="flex-col grid grid-cols-3 gap-0.5 p-1 bg-slate-100 rounded items-center">
       {fields.map((field, idx) => (
         <Fragment key={field.name}>
-          <p className="font-bold">{field.label}:</p>
+          <p className="font-bold text-sm">{field.label}:</p>
           <input
             name={field.name}
             defaultValue={initialData?.[field.name] || ''}
-            className="border rounded px-1"
+            className="border rounded px-1 text-sm"
             type={field.type || 'text'}
             {...(field.options || {})}
             required

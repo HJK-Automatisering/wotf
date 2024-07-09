@@ -1,7 +1,7 @@
 import BaseEntity from './BaseEntity'
 import { v4 as uuidv4 } from 'uuid'
-import CompanyFormData from './formTypes/CompanyFormData'
-import Result, { Status } from './Result'
+import CompanyFormData from '../entityFormData/CompanyFormData'
+import Result, { Status } from '../Result'
 
 export interface SerializedCompany {
   id: string
