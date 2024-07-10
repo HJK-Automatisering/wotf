@@ -83,16 +83,16 @@ class StateHandler {
   }
 
   addVisit(visit: Visit): Result<null> {
-    if (this.visits.some((v) => v.company.id === visit.company.id && v.visitTime.id === visit.visitTime.id)) {
-      return { status: Status.Error, message: 'Virksomheden har allerede et besøg på dette tidspunkt', data: null }
-    }
+    // if (this.visits.some((v) => v.company.id === visit.company.id && v.visitTime.id === visit.visitTime.id)) {
+    //   return { status: Status.Error, message: 'Virksomheden har allerede et besøg på dette tidspunkt', data: null }
+    // }
 
-    if (this.visits.some((v) => v.team.id === visit.team.id && v.visitTime.id === visit.visitTime.id)) {
-      return { status: Status.Error, message: 'Holdet har allerede et besøg på dette tidspunkt', data: null }
-    }
+    // if (this.visits.some((v) => v.team.id === visit.team.id && v.visitTime.id === visit.visitTime.id)) {
+    //   return { status: Status.Error, message: 'Holdet har allerede et besøg på dette tidspunkt', data: null }
+    // }
 
     visit.id = uuidv4()
-    this.setVisits([...this.visits, visit])
+    this.setVisits((visits) => [...visits, visit])
     return this.okResult
   }
 

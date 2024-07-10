@@ -2,7 +2,9 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import { AppContext } from '../contexts/AppContextProvider'
 import ListHeader from './ListHeader'
 import Company from '../types/entities/Company'
-import School, { Team } from '../types/entities/School'
+import { Team } from '../types/entities/School'
+import Visit from '../types/Visit'
+import ColorHandler from '../handlers/ColorHandler'
 
 interface Cell {
   company: Company
@@ -13,7 +15,6 @@ export default function VisitPicker() {
   const { stateHandler } = useContext(AppContext)
 
   const [hidden, setHidden] = useState<boolean>(false)
-  const [selectedCell, setSelectedCell] = useState<Cell | null>(null)
   const [hoveredCell, setHoveredCell] = useState<Cell | null>(null)
 
   const topRightRef = useRef<HTMLDivElement | null>(null)
@@ -21,6 +22,7 @@ export default function VisitPicker() {
 
   const companies = stateHandler.getCompanies()
   const schools = stateHandler.getSchools()
+  const visitTimes = stateHandler.getVisitTimes()
   const visits = stateHandler.getVisits()
 
   function handleToggleHidden() {
@@ -31,16 +33,22 @@ export default function VisitPicker() {
     stateHandler.removeAllVisits()
   }
 
-  function handleSetSelectedCell(company: Company, team: Team) {
-    if (isSelectedCell(company, team)) {
-      setSelectedCell(null)
-    } else {
-      setSelectedCell({ company, team })
-    }
-  }
+  function handleSetVisitedCell(company: Company, team: Team) {
+    const visit = hasVisit(company, team)
+    if (visit) {
+      const visitTimeIdx = visitTimes.findIndex((vt) => vt.id === visit.visitTime.id)
+      const nextVisitTimeIdx = visitTimeIdx + 1
 
-  function isSelectedCell(company: Company, team: Team) {
-    return selectedCell?.company.id === company.id && selectedCell.team.id === team.id
+      stateHandler.removeVisit(visit.id)
+
+      if (nextVisitTimeIdx < visitTimes.length) {
+        stateHandler.addVisit(new Visit(company, team, visitTimes[nextVisitTimeIdx]))
+      }
+    } else {
+      const visit = new Visit(company, team, stateHandler.getVisitTimes()[0])
+      console.log(visit)
+      stateHandler.addVisit(visit)
+    }
   }
 
   function isHoveredCell(company: Company, team: Team) {
@@ -62,21 +70,26 @@ export default function VisitPicker() {
   }
 
   function hasVisit(company: Company, team: Team) {
-    return visits.some((visit) => visit.company.id === company.id && visit.team.id === team.id)
+    return visits.find((visit) => visit.company.id === company.id && visit.team.id === team.id)
   }
 
   function getBackgroundColor(company: Company, team: Team) {
-    if (isSelectedCell(company, team)) {
-      return 'bg-blue-500 rounded-md'
-    } else if (hasVisit(company, team)) {
-      return 'bg-blue-500'
+    const visit = hasVisit(company, team)
+
+    if (visit) {
+      return ColorHandler.generatePastelColor(visit.visitTime.displayName)
     } else if (isHoveredCell(company, team)) {
-      return 'bg-slate-400'
+      return '#e2e8f0'
     } else if (isSameColRowCell(company, team)) {
-      return 'bg-slate-100'
+      return '#f1f5f9'
     } else {
-      return 'bg-white'
+      return '#FFFFFF'
     }
+  }
+
+  function getCellText(company: Company, team: Team) {
+    const visit = hasVisit(company, team)
+    return visit ? visit.visitTime.displayName.replace(' - ', '\n') : ''
   }
 
   useEffect(() => {
@@ -105,7 +118,7 @@ export default function VisitPicker() {
   }, [])
 
   return (
-    <div>
+    <div className="pb-44">
       <ListHeader
         title={`Besøg (${stateHandler.getVisits().length})`}
         buttons={[
@@ -177,13 +190,20 @@ export default function VisitPicker() {
                       school.teams.map((team, idx) => (
                         <button
                           key={team.id}
-                          onClick={() => handleSetSelectedCell(company, team)}
+                          onClick={() => handleSetVisitedCell(company, team)}
                           onMouseOver={() => setHoveredCell({ company, team })}
                           className={`flex flex-col p-0.5 min-w-10 w-10 border-e border-b h-6 ${
                             idx === school.numTeams - 1 ? 'border-e-2' : ''
                           }`}
                         >
-                          <div className={`h-full w-full ${getBackgroundColor(company, team)}`}></div>
+                          <div
+                            className={`h-full w-full ${hasVisit(company, team) ? 'rounded' : ''}`}
+                            style={{ backgroundColor: getBackgroundColor(company, team) }}
+                          >
+                            <p className="truncate text-[6px] font-semibold text-center whitespace-break-spaces text-white">
+                              {getCellText(company, team)}
+                            </p>
+                          </div>
                         </button>
                       ))
                     )}

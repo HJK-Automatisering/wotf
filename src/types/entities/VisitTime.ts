@@ -61,7 +61,6 @@ export default class VisitTime implements BaseEntity<VisitTimeFormData> {
     const visitTime = new VisitTime(new Date(startTime), new Date(endTime))
     visitTime.id = id
     visitTime.displayName = displayName
-
     return visitTime
   }
 
@@ -69,7 +68,6 @@ export default class VisitTime implements BaseEntity<VisitTimeFormData> {
     this.startTime = VisitTime.getDateTimeFromTimeString(formData.startTime)
     this.endTime = VisitTime.getDateTimeFromTimeString(formData.endTime)
     this.displayName = VisitTime.getDisplayName(this.startTime, this.endTime)
-
     return { status: Status.Success, message: '', data: null }
   }
 

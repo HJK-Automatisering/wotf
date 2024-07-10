@@ -44,6 +44,7 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
       setCompanies(fakeCompanies)
       setSchools(fakeSchools)
       setVisitTimes(fakeVisitTimes)
+      setVisits([])
     }
   }, [])
 
