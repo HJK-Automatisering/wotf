@@ -13,7 +13,7 @@ export default function ListHeader(props: Props) {
   const { title, buttons } = props
 
   return (
-    <div className="flex w-full mb-3">
+    <div className="flex w-full">
       <h2 className="font-bold text-lg">{title}</h2>
       <div className="flex space-x-3 ml-auto">
         {buttons.map((button, idx) => (

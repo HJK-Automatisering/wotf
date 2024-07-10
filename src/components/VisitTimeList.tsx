@@ -21,7 +21,7 @@ export default function CompanyList() {
   const handleUpdateEntity = { handle: stateHandler.updateVisitTime.bind(stateHandler) }
 
   const handleRemoveAllEntities = {
-    safetyMessage: 'Er du sikker på at du vil slette alle virksomheder?',
+    safetyMessage: 'Er du sikker på at du vil slette alle besøgstider?',
     handle: stateHandler.removeAllVisitTimes.bind(stateHandler),
   }
 

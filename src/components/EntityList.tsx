@@ -92,7 +92,7 @@ export default function EntityList<T extends BaseFormData, U extends BaseEntity<
   }
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full space-y-3">
       <ListHeader
         title={props.title}
         buttons={[
@@ -116,36 +116,38 @@ export default function EntityList<T extends BaseFormData, U extends BaseEntity<
               />
             </div>
           )}
-          <div className="cus-container">
-            {entityDataMap.map((mapping, idx) => (
-              <div key={mapping.entity.id}>
-                {beingEdited.includes(mapping.entity.id) ? (
-                  <Form<T>
-                    fields={props.fields}
-                    initialData={mapping.data}
-                    onSubmit={(data) => handleUpdateEntity(data, mapping.entity.id)}
-                    onCancel={() => handleCancelUpdateEntity(mapping.entity.id)}
-                    submitIcon={<IoCheckmark />}
-                    cancelIcon={<IoCloseOutline />}
-                  />
-                ) : (
-                  <div
-                    onClick={() => handleToggleEditEntity(mapping.entity.id)}
-                    className="flex hover:bg-slate-100 hover:cursor-pointer px-1 rounded"
-                  >
-                    <p className="text-sm">{mapping.entity.displayName}</p>
-                    <button
-                      className="text-slate-400 hover:text-red-500 ml-auto"
-                      onClick={() => handleRemoveEntity(mapping.entity.id)}
+          {entityDataMap.length > 0 && (
+            <div className="cus-container">
+              {entityDataMap.map((mapping, idx) => (
+                <div key={mapping.entity.id}>
+                  {beingEdited.includes(mapping.entity.id) ? (
+                    <Form<T>
+                      fields={props.fields}
+                      initialData={mapping.data}
+                      onSubmit={(data) => handleUpdateEntity(data, mapping.entity.id)}
+                      onCancel={() => handleCancelUpdateEntity(mapping.entity.id)}
+                      submitIcon={<IoCheckmark />}
+                      cancelIcon={<IoCloseOutline />}
+                    />
+                  ) : (
+                    <div
+                      onClick={() => handleToggleEditEntity(mapping.entity.id)}
+                      className="flex hover:bg-slate-100 hover:cursor-pointer px-1 rounded"
                     >
-                      <IoTrashOutline />
-                    </button>
-                  </div>
-                )}
-                {idx < entityDataMap.length - 1 && <hr className="my-1" />}
-              </div>
-            ))}
-          </div>
+                      <p className="text-sm">{mapping.entity.displayName}</p>
+                      <button
+                        className="text-slate-400 hover:text-red-500 ml-auto"
+                        onClick={() => handleRemoveEntity(mapping.entity.id)}
+                      >
+                        <IoTrashOutline />
+                      </button>
+                    </div>
+                  )}
+                  {idx < entityDataMap.length - 1 && <hr className="my-1" />}
+                </div>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>
