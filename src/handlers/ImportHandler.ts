@@ -32,7 +32,7 @@ export default class ImportHandler {
     try {
       const clipboardText = await navigator.clipboard.readText()
 
-      const schoolStrings = clipboardText.split('\n')
+      const schoolStrings = clipboardText.trim().split('\n')
       const schools = schoolStrings.map((schoolString) => {
         const schoolData = schoolString.split('\t')
         return {
@@ -50,7 +50,7 @@ export default class ImportHandler {
     try {
       const clipboardText = await navigator.clipboard.readText()
 
-      const visitTimeStrings = clipboardText.split('\n')
+      const visitTimeStrings = clipboardText.trim().split('\n')
       const visitTimes = visitTimeStrings.map((visitTimeString) => {
         const visitTimeData = visitTimeString.replace(/\./g, ':').split('\t')
         return {
