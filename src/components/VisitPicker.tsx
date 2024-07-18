@@ -251,8 +251,10 @@ export default function VisitPicker() {
                   {/* Scrollbar left*/}
                   <div className="flex flex-col min-h-full min-w-[25%] border-slate-400"></div>
                   {/* Scrollbar right*/}
-                  <div ref={scrollRightRef} className="flex flex-col h-4 overflow-x-auto">
-                    <div style={{ minWidth: teams.length * 40, maxWidth: teams.length * 40 }} className="flex"></div>
+                  <div ref={scrollRightRef} className="flex flex-col h-6 overflow-x-auto overflow-y-hidden">
+                    <div style={{ minWidth: teams.length * 40, maxWidth: teams.length * 40 }} className="flex">
+                      &nbsp;
+                    </div>
                   </div>
                 </div>
               </div>

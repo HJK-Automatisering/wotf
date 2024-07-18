@@ -41,7 +41,6 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
 
   useEffect(() => {
     if (import.meta.env.VITE_POPULATED === 'true') {
-      console.log('asdasd')
       setCompanies(fakeCompanies)
       setSchools(fakeSchools)
       setVisitTimes(fakeVisitTimes)
