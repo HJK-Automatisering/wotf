@@ -40,11 +40,12 @@ export default function VisitPicker() {
   }
 
   function handleRemoveAllVisits() {
+    if (!confirm('Er du sikker på at du vil fjerne alle besøg?')) return
     setResult(stateHandler.removeAllVisits())
   }
 
   async function handleExportVisits() {
-    setResult(await ExportHandler.exportVisitsToExcel(visits))
+    setResult(await ExportHandler.exportVisitsToExcel(visits, schools))
   }
 
   function handleSetVisitedCell(company: Company, team: Team) {
@@ -201,7 +202,7 @@ export default function VisitPicker() {
                 {/* Bot */}
                 <div className="flex flex-row">
                   {/* Bot left */}
-                  <div className="flex flex-col w-1/4">
+                  <div className="flex flex-col min-w-[25%]">
                     {companies.map((company) => (
                       <div
                         key={company.id}
