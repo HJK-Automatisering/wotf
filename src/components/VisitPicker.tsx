@@ -7,6 +7,7 @@ import Visit from '../types/Visit'
 import ColorHandler from '../handlers/ColorHandler'
 import ResultBox from './ResultBox'
 import Result, { Status } from '../types/Result'
+import ExportHandler from '../handlers/ExportHandler'
 
 interface Cell {
   company: Company
@@ -22,9 +23,11 @@ export default function VisitPicker() {
 
   const topRightRef = useRef<HTMLDivElement | null>(null)
   const botRightRef = useRef<HTMLDivElement | null>(null)
+  const scrollRightRef = useRef<HTMLDivElement | null>(null)
 
   const companies = stateHandler.getCompanies()
   const schools = stateHandler.getSchools()
+  const teams = schools.flatMap((s) => s.teams)
   const visitTimes = stateHandler.getVisitTimes()
   const visits = stateHandler.getVisits()
 
@@ -38,6 +41,10 @@ export default function VisitPicker() {
 
   function handleRemoveAllVisits() {
     setResult(stateHandler.removeAllVisits())
+  }
+
+  async function handleExportVisits() {
+    setResult(await ExportHandler.exportVisitsToExcel(visits))
   }
 
   function handleSetVisitedCell(company: Company, team: Team) {
@@ -108,24 +115,33 @@ export default function VisitPicker() {
   useEffect(() => {
     const topRightDiv = topRightRef.current
     const botRightDiv = botRightRef.current
+    const scrollRightDiv = scrollRightRef.current
 
     const syncScroll = (event: Event) => {
       const uiEvent = event as UIEvent
 
       if (topRightDiv && uiEvent.target === topRightDiv) {
         if (botRightDiv) botRightDiv.scrollLeft = topRightDiv.scrollLeft
+        if (scrollRightDiv) scrollRightDiv.scrollLeft = topRightDiv.scrollLeft
       } else if (botRightDiv && uiEvent.target === botRightDiv) {
         if (topRightDiv) topRightDiv.scrollLeft = botRightDiv.scrollLeft
+        if (scrollRightDiv) scrollRightDiv.scrollLeft = botRightDiv.scrollLeft
+      } else if (scrollRightDiv && uiEvent.target === scrollRightDiv) {
+        if (botRightDiv) botRightDiv.scrollLeft = scrollRightDiv.scrollLeft
+        if (topRightDiv) topRightDiv.scrollLeft = scrollRightDiv.scrollLeft
       }
     }
 
-    if (topRightDiv && botRightDiv) {
+    if (topRightDiv && botRightDiv && scrollRightDiv) {
+      console.log('asd')
       topRightDiv.addEventListener('scroll', syncScroll as EventListener)
       botRightDiv.addEventListener('scroll', syncScroll as EventListener)
+      scrollRightDiv.addEventListener('scroll', syncScroll as EventListener)
 
       return () => {
         topRightDiv.removeEventListener('scroll', syncScroll as EventListener)
         botRightDiv.removeEventListener('scroll', syncScroll as EventListener)
+        scrollRightDiv.removeEventListener('scroll', syncScroll as EventListener)
       }
     }
   }, [])
@@ -139,7 +155,7 @@ export default function VisitPicker() {
             buttons={[
               { text: hidden ? 'Vis' : 'Skjul', onClick: handleToggleHidden },
               { text: 'Ryd', onClick: handleRemoveAllVisits },
-              { text: 'Eksporter', onClick: handleRemoveAllVisits, width: 100 },
+              { text: 'Eksporter', onClick: handleExportVisits, width: 100 },
             ]}
           />
           {!hidden && (
@@ -200,7 +216,7 @@ export default function VisitPicker() {
                   </div>
 
                   {/* Bot right */}
-                  <div ref={botRightRef} className="flex flex-col overflow-x-auto h-full">
+                  <div ref={botRightRef} className="flex flex-col overflow-x-auto h-full hide-scrollbar">
                     <div>
                       {companies.map((company) => (
                         <div key={company.id} className="flex flex-row">
@@ -228,6 +244,16 @@ export default function VisitPicker() {
                         </div>
                       ))}
                     </div>
+                  </div>
+                </div>
+
+                {/* Scrollbar */}
+                <div className="flex flex-row sticky bottom-0 bg-slate-100 ">
+                  {/* Scrollbar left*/}
+                  <div className="flex flex-col min-h-full min-w-[25%] border-slate-400"></div>
+                  {/* Scrollbar right*/}
+                  <div ref={scrollRightRef} className="flex flex-col h-4 overflow-x-auto">
+                    <div style={{ minWidth: teams.length * 40, maxWidth: teams.length * 40 }} className="flex"></div>
                   </div>
                 </div>
               </div>
