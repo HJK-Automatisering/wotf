@@ -40,7 +40,8 @@ function AppContextProvider({ children }: { children: JSX.Element }) {
   const [visits, setVisits] = useState<Visit[]>(loadedState.visits)
 
   useEffect(() => {
-    if (import.meta.env.VITE_PUBULATED === 'true') {
+    if (import.meta.env.VITE_POPULATED === 'true') {
+      console.log('asdasd')
       setCompanies(fakeCompanies)
       setSchools(fakeSchools)
       setVisitTimes(fakeVisitTimes)
