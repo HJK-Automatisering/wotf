@@ -133,7 +133,6 @@ export default function VisitPicker() {
     }
 
     if (topRightDiv && botRightDiv && scrollRightDiv) {
-      console.log('asd')
       topRightDiv.addEventListener('scroll', syncScroll as EventListener)
       botRightDiv.addEventListener('scroll', syncScroll as EventListener)
       scrollRightDiv.addEventListener('scroll', syncScroll as EventListener)
