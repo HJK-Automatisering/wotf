@@ -19,6 +19,6 @@
   }
 
   .cus-container {
-    @apply bg-white rounded p-2 shadow max-h-[300px] overflow-y-auto;
+    @apply bg-white  p-2 shadow border max-h-[300px] overflow-y-auto;
   }
 }

@@ -106,7 +106,7 @@ export default function EntityList<T extends BaseFormData, U extends BaseEntity<
         <>
           <ResultBox result={result} />
           {addingOpen && (
-            <div className="bg-white rounded p-2 shadow">
+            <div className="bg-white p-2 shadow">
               <Form<T>
                 fields={props.fields}
                 onSubmit={handleSubmitEntity}
@@ -132,7 +132,7 @@ export default function EntityList<T extends BaseFormData, U extends BaseEntity<
                   ) : (
                     <div
                       onClick={() => handleToggleEditEntity(mapping.entity.id)}
-                      className="flex hover:bg-slate-100 hover:cursor-pointer px-1 rounded"
+                      className="flex hover:bg-slate-100 hover:cursor-pointer px-1"
                     >
                       <p className="text-sm">{mapping.entity.displayName}</p>
                       <button

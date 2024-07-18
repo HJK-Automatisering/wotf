@@ -27,14 +27,17 @@ export default function Form<T extends BaseFormData>({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex-col grid grid-cols-3 gap-0.5 p-1 bg-slate-100 rounded items-center">
+    <form
+      onSubmit={handleSubmit}
+      className="flex-col grid grid-cols-3 gap-0.5 px-1 py-3 bg-slate-100 items-center border"
+    >
       {fields.map((field, idx) => (
         <Fragment key={field.name}>
           <p className="font-bold text-sm">{field.label}:</p>
           <input
             name={field.name}
             defaultValue={initialData?.[field.name] || ''}
-            className="border rounded px-1 text-sm"
+            className="border px-1 text-sm"
             type={field.type || 'text'}
             {...(field.options || {})}
             required
