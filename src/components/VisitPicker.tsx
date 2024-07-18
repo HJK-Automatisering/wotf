@@ -202,7 +202,7 @@ export default function VisitPicker() {
                 {/* Bot */}
                 <div className="flex flex-row">
                   {/* Bot left */}
-                  <div className="flex flex-col min-w-[25%]">
+                  <div className="flex flex-col min-w-[25%] w-[25%]">
                     {companies.map((company) => (
                       <div
                         key={company.id}
