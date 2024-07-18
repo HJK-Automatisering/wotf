@@ -129,8 +129,7 @@ export default class ExportHandler {
       link.click()
       document.body.removeChild(link)
       return { status: Status.Success, message: '', data: null }
-    } catch (e) {
-      console.error(e)
+    } catch {
       return { status: Status.Error, message: 'Kunne ikke download Excelark', data: null }
     }
   }

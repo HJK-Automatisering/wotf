@@ -10,7 +10,7 @@ export default class ImportHandler {
     try {
       const clipboardText = await navigator.clipboard.readText()
 
-      const companyStrings = clipboardText.split('\n')
+      const companyStrings = clipboardText.trim().split('\n')
       const companies = companyStrings.map((companyString) => {
         const companyData = companyString.split('\t')
         return {
