@@ -144,7 +144,7 @@ export default function VisitPicker() {
         scrollRightDiv.removeEventListener('scroll', syncScroll as EventListener)
       }
     }
-  }, [])
+  }, [hidden])
 
   return (
     <>
